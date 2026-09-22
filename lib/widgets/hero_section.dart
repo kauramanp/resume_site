@@ -25,7 +25,7 @@ class HeroSection extends StatelessWidget {
           const Wrap(
             spacing: 10,
             runSpacing: 10,
-            children: const [
+            children: [
               StatusBadge(label: 'build', value: 'passing'),
               StatusBadge(label: 'deployed', value: 'github pages', dotColor: AppColors.accentAmber),
             ],
