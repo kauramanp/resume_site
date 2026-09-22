@@ -22,7 +22,7 @@ class HeroSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Wrap(
+          const Wrap(
             spacing: 10,
             runSpacing: 10,
             children: const [

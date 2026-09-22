@@ -8,7 +8,7 @@ import '../models/resume_models.dart';
 /// your own PDF at web/resume.pdf, and push — the GitHub Actions
 /// workflow in .github/workflows/deploy.yml takes care of the rest.
 /// ---------------------------------------------------------------------
-final resumeData = ResumeData(
+const resumeData =  ResumeData(
   name: 'Amanpreet Kaur',
   role: 'Senior Android Developer',
   location: 'Jalandhar, Punjab, India',
