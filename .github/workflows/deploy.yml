@@ -1,0 +1,78 @@
+# Builds this Flutter web app and deploys it to GitHub Pages.
+#
+# This file is deliberately commented in detail — it's meant to be read
+# top to bottom as a teaching example of a GitHub Actions workflow.
+#
+# The big ideas it demonstrates:
+#   1. Triggers        — what causes the workflow to run (`on:`)
+#   2. Jobs & needs     — independent units of work, and dependencies between them
+#   3. Steps & actions  — the individual commands/plugins inside a job
+#   4. Permissions      — the minimum access the workflow's token needs
+#   5. Artifacts        — passing build output from one job to another
+#   6. Environments     — a named deployment target with its own URL
+
+name: Deploy resume site to GitHub Pages
+
+# --- 1. Triggers -----------------------------------------------------
+on:
+  push:
+    branches: [main] # run automatically on every push to main
+  workflow_dispatch: # also allow a manual "Run workflow" button in the Actions tab
+
+# Only one deployment should run at a time; if a new push arrives while
+# one is in flight, cancel the older one instead of queueing behind it.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+# The GITHUB_TOKEN needs these two scopes to publish to Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # --- 2 & 3. A job made of steps, each either a shell command (`run:`)
+  # or a reusable action (`uses:`) ----------------------------------
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true # caches the Flutter SDK between runs for faster builds
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Build web release
+        # GitHub Project Pages are served from /<repo-name>/, so the app's
+        # base href has to match — ${{ github.event.repository.name }} reads
+        # that name straight from the workflow's own context, no hardcoding.
+        run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+
+      - name: Upload build output as a Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  # --- 6. A second job, gated on the first with `needs:` ------------
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
