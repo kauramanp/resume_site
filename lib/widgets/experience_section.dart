@@ -79,7 +79,7 @@ class _ExperienceEntry extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
-                        padding: const EdgeInsets.only(top: 2),
+                        padding: EdgeInsets.only(top: 2),
                         child: Text('▸', style: TextStyle(color: AppColors.textFaint, fontSize: 13)),
                       ),
                       const SizedBox(width: 10),
